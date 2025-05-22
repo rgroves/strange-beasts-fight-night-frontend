@@ -1,54 +1,32 @@
-# React + TypeScript + Vite
+# Strange Beasts: Fight Night
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+Unleash your inner doodler in this wild, web-based arena where—with the help of your imagination, AI, and our virtual ring-side blow-by-blow commentator—**your doodles come to life**!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Sketch a one-of-a-kind beast, pump up its Power, Defense, and Speed scores, and pick its signature attack moves—then sit back and **listen** as the epic showdown unfolds in real time.
 
-## Expanding the ESLint configuration
+Is your mech-golem’s gravity hammer smash mighty enough to counter its challenger’s hurricane-scale wingbeat? Only the stats—and a bit of luck—will decide!
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Key Features**
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- 🎨 **Creative Freedom:** Draw any beast you can imagine, from feathered wyverns to steam-powered scorpions.
+- ⚔️ **Custom Stats & Attacks:** Assign ability scores and equip your beast with any attack you can imagine, from blazing plasma breath to reality-warping tentacle strikes.
+- 🔊 **Immersive Commentary:** Hear every miss, glancing blow, and critical hit narrated with pulse-pounding flair.
+- 🔄 **Endless Variety:** No two battles are the same!
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Ready to turn your sketches into legendary fighters? Let the Strange Beasts: Fight Night begin!
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## How it works:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+1. **Create a Game (or Join In)** – connect with another challenger and ignite the arena!
+
+1. **Draw** – unleash your creativity: sketch your strange beast however you like—from primal cave markings to elaborate illustrations—and add a brief description.
+
+1. **Configure Your Beast** – dial in its Power, Defense, and Speed scores, then arm it with **any** attack types you can imagine.
+
+1. **Tune In** – experience every thunderous strike and near miss in real time with pulse-pounding, blow-by-blow commentary!
+
+## **Ready? Fight!**
+
+Play here: _\[TODO: URL TBD]_
