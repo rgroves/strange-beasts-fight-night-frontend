@@ -4,6 +4,7 @@ interface StartGameInput {
 
 interface StartGameOuptut {
 	gameId: string;
+	playerId: string;
 }
 
 interface GetGameStateInput {
@@ -17,6 +18,15 @@ interface GetGameStateOutput {
 	monsterImageMap: Record<string, string>;
 	monsterConfigMap: Record<string, string>;
 	audioFilePath: string;
+}
+
+interface AddPlayerInput {
+	gameId: string;
+	requestedPlayerId: string;
+}
+
+interface AddPlayerOutput {
+	playerId: string;
 }
 
 export default class ApiV1Client {
@@ -50,6 +60,28 @@ export default class ApiV1Client {
 
 		if (!response.ok) {
 			throw new Error(`Error getting game state: ${response.statusText}`);
+		}
+		const data = await response.json();
+		return data;
+	}
+
+	public async addPlayer({
+		gameId,
+		requestedPlayerId,
+	}: AddPlayerInput): Promise<AddPlayerOutput> {
+		const response = await fetch(
+			`${this.baseUrl}/game/${gameId}/player/${requestedPlayerId}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ requestedPlayerId }),
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(`Error adding player: ${response.statusText}`);
 		}
 		const data = await response.json();
 		return data;
