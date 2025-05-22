@@ -37,6 +37,8 @@ export default tseslint.config(
 			],
 			...reactX.configs["recommended-typescript"].rules,
 			...reactDom.configs.recommended.rules,
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "error",
 		},
 	},
 	eslintConfigPrettier,

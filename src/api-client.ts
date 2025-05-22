@@ -29,6 +29,16 @@ interface AddPlayerOutput {
 	playerId: string;
 }
 
+interface UploadDoodleInput {
+	gameId: string;
+	playerId: string;
+	dataUri: string;
+}
+
+interface UploadDoodleOutput {
+	fileName: string;
+}
+
 export default class ApiV1Client {
 	private baseUrl = "http://localhost:3000/api/v1";
 
@@ -85,5 +95,30 @@ export default class ApiV1Client {
 		}
 		const data = await response.json();
 		return data;
+	}
+
+	public async uploadDoodle({
+		gameId,
+		playerId,
+		dataUri,
+	}: UploadDoodleInput): Promise<UploadDoodleOutput> {
+		const response = await fetch(
+			`${this.baseUrl}/game/${gameId}/player/${playerId}/doodle`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ image: dataUri }),
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(
+				`Error adding player doodle: ${response.statusText}`,
+			);
+		}
+		const data = await response.json();
+		return { fileName: data.fileName };
 	}
 }

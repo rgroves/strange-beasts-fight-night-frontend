@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ApiV1Client from "./api-client";
 import "./App.css";
+import DoodleCanvas from "./DoodleCanvas";
 
 const client = new ApiV1Client();
 
@@ -67,6 +68,30 @@ function App() {
 		console.log(`Current players: ${localGameState.players}`);
 	};
 
+	const sendDoodle = async (dataUri: string) => {
+		if (localGameState?.state !== "DrawingPhase") {
+			return;
+		}
+
+		if (!gameId) {
+			console.error("No game ID available to send doodle.");
+			return;
+		}
+
+		const playerId =
+			localGameState?.monsterImageMap["Player 1"] === undefined ?
+				"Player 1"
+			:	"Player 2";
+
+		const doodleFileName = await client.uploadDoodle({
+			gameId,
+			playerId,
+			dataUri,
+		});
+
+		console.log(`Doodle sent: ${doodleFileName}`);
+	};
+
 	return (
 		<>
 			<h1>Strange Beasts: Fight Night</h1>
@@ -84,7 +109,12 @@ function App() {
 					</button>
 				</div>
 			)}
+
 			<div>{`Current State of the Game: ${localGameState?.state}`}</div>
+
+			{localGameState?.state === "DrawingPhase" && (
+				<DoodleCanvas onExport={sendDoodle} />
+			)}
 		</>
 	);
 }
