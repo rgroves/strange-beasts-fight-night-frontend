@@ -32,11 +32,26 @@ interface AddPlayerOutput {
 interface UploadDoodleInput {
 	gameId: string;
 	playerId: string;
+	monsterDescription: string;
 	dataUri: string;
 }
 
 interface UploadDoodleOutput {
 	fileName: string;
+}
+
+interface UploadMonsterConfigInput {
+	gameId: string;
+	playerId: string;
+	name: string;
+	description: string;
+	monsterType: string;
+	attackTypes: string[];
+	specialAbilities: string[];
+	power: number;
+	defense: number;
+	speed: number;
+	maxHealth: number;
 }
 
 export default class ApiV1Client {
@@ -100,6 +115,7 @@ export default class ApiV1Client {
 	public async uploadDoodle({
 		gameId,
 		playerId,
+		monsterDescription,
 		dataUri,
 	}: UploadDoodleInput): Promise<UploadDoodleOutput> {
 		const response = await fetch(
@@ -109,7 +125,7 @@ export default class ApiV1Client {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ image: dataUri }),
+				body: JSON.stringify({ image: dataUri, monsterDescription }),
 			},
 		);
 
@@ -120,5 +136,46 @@ export default class ApiV1Client {
 		}
 		const data = await response.json();
 		return { fileName: data.fileName };
+	}
+
+	public async uploadMonsterConfig({
+		gameId,
+		playerId,
+		name,
+		description,
+		monsterType,
+		attackTypes,
+		specialAbilities,
+		power,
+		defense,
+		speed,
+		maxHealth,
+	}: UploadMonsterConfigInput): Promise<void> {
+		const response = await fetch(
+			`${this.baseUrl}/game/${gameId}/player/${playerId}/monster-config`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					name,
+					description,
+					type: monsterType,
+					attackTypes,
+					specialAbilities,
+					power,
+					defense,
+					speed,
+					maxHealth,
+				}),
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(
+				`Error uploading monster config: ${response.statusText}`,
+			);
+		}
 	}
 }

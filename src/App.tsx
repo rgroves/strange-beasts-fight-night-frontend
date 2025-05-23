@@ -5,6 +5,11 @@ import DoodleCanvas from "./DoodleCanvas";
 
 const client = new ApiV1Client();
 
+const p1MonsterDesc =
+	"A giant ball of demonic flesh with a single eye in the middle. An appendage rises from the top of the ball, and it has a another smaller eye, that can shoot radiant heat beams from it. A slim mouth, dripping with some kind of goo, displays sharp bone-razor like teeth.";
+const p2MonsterDesc =
+	"A giant mud golem, made of dirt and carnage. Can hurl a volley of deadly mud balls.";
+
 function App() {
 	const [gameId, setGameId] = useState<string>("");
 	const [localGameState, setLocalGameState] = useState<any>(undefined);
@@ -36,6 +41,11 @@ function App() {
 			}
 		};
 	}, [gameId]);
+
+	if (localGameState?.state === "GameOver") {
+		setGameId("");
+		setLocalGameState(undefined);
+	}
 
 	const startGame = async () => {
 		const requestedPlayerId = "Player 1";
@@ -83,9 +93,13 @@ function App() {
 				"Player 1"
 			:	"Player 2";
 
+		const monsterDescription =
+			playerId === "Player 1" ? p1MonsterDesc : p2MonsterDesc;
+
 		const doodleFileName = await client.uploadDoodle({
 			gameId,
 			playerId,
+			monsterDescription,
 			dataUri,
 		});
 
@@ -114,6 +128,167 @@ function App() {
 
 			{localGameState?.state === "DrawingPhase" && (
 				<DoodleCanvas onExport={sendDoodle} />
+			)}
+
+			{localGameState?.state === "MonsterConfigPhase" && (
+				<div className="card" style={{ textAlign: "left" }}>
+					<h2>Monster Config</h2>
+					<form
+						onSubmit={async (e) => {
+							e.preventDefault();
+
+							const playerId =
+								(
+									localGameState?.monsterConfigMap[
+										"Player 1"
+									] === undefined
+								) ?
+									"Player 1"
+								:	"Player 2";
+
+							const monsterDescription =
+								playerId === "Player 1" ? p1MonsterDesc : (
+									p2MonsterDesc
+								);
+
+							const formData = new FormData(e.currentTarget);
+							const monsterConfig = {
+								name:
+									formData.get("name")?.toString().trim() ??
+									"",
+								description: monsterDescription,
+								monsterType:
+									formData.get("type")?.toString().trim() ??
+									"",
+								attackTypes:
+									formData
+										.get("attackTypes")
+										?.toString()
+										.split(",")
+										.map((s) => s.trim())
+										.filter(Boolean) ?? [],
+								specialAbilities:
+									formData
+										.get("specialAbilities")
+										?.toString()
+										.split(",")
+										.map((s) => s.trim())
+										.filter(Boolean) ?? [],
+								power: Number(formData.get("power")) || 3,
+								defense: Number(formData.get("defense")) || 3,
+								speed: Number(formData.get("speed")) || 3,
+								maxHealth: 6,
+							};
+							console.log("Monster Config: ", monsterConfig);
+
+							client.uploadMonsterConfig({
+								gameId,
+								playerId,
+								name: monsterConfig.name,
+								description: monsterConfig.description,
+								monsterType: monsterConfig.monsterType,
+								attackTypes: monsterConfig.attackTypes,
+								specialAbilities:
+									monsterConfig.specialAbilities,
+								power: monsterConfig.power,
+								defense: monsterConfig.defense,
+								speed: monsterConfig.speed,
+								maxHealth: monsterConfig.maxHealth,
+							});
+							console.log("Monster Config submitted");
+						}}
+						autoComplete="off"
+					>
+						<div>
+							<label>
+								Name:
+								<input
+									name="name"
+									type="text"
+									placeholder="Monster Name"
+									required
+									autoFocus
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Type:
+								<input
+									name="type"
+									type="text"
+									placeholder="Monster Type (e.g. Golem, Demon)"
+									required
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Attack Types:
+								<input
+									name="attackTypes"
+									type="text"
+									placeholder="Attack Types (comma separated)"
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Special Abilities:
+								<input
+									name="specialAbilities"
+									type="text"
+									placeholder="Special Abilities (comma separated)"
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Power:
+								<input
+									name="power"
+									type="number"
+									placeholder="Power"
+									min={1}
+									max={10}
+									defaultValue={3}
+									required
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Defense:
+								<input
+									name="defense"
+									type="number"
+									placeholder="Defense"
+									min={1}
+									max={10}
+									defaultValue={3}
+									required
+								/>
+							</label>
+						</div>
+						<div>
+							<label>
+								Speed:
+								<input
+									name="speed"
+									type="number"
+									placeholder="Speed"
+									min={1}
+									max={10}
+									defaultValue={3}
+									required
+								/>
+							</label>
+						</div>
+						<div style={{ marginTop: "1em" }}>
+							<button type="submit">Submit</button>
+						</div>
+					</form>
+				</div>
 			)}
 		</>
 	);
