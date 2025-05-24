@@ -16,7 +16,6 @@ function App() {
 	const [localGameState, setLocalGameState] = useState<GameState | null>(
 		null,
 	);
-	useState(false);
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
