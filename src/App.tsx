@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ApiV1Client from "./api-client";
 import "./App.css";
 import DoodleCanvas from "./DoodleCanvas";
+import type { GameState } from "./be-types";
 
 const client = new ApiV1Client();
 
@@ -12,7 +13,9 @@ const p2MonsterDesc =
 
 function App() {
 	const [gameId, setGameId] = useState<string>("");
-	const [localGameState, setLocalGameState] = useState<any>(undefined);
+	const [localGameState, setLocalGameState] = useState<GameState | null>(
+		null,
+	);
 	useState(false);
 
 	useEffect(() => {
@@ -44,7 +47,7 @@ function App() {
 
 	if (localGameState?.state === "GameOver") {
 		setGameId("");
-		setLocalGameState(undefined);
+		setLocalGameState(null);
 	}
 
 	const startGame = async () => {
@@ -75,7 +78,7 @@ function App() {
 			state: "WAIT",
 		}));
 		console.log(`Joined game as player: ${playerId}`);
-		console.log(`Current players: ${localGameState.players}`);
+		console.log(`Current players: ${localGameState?.players}`);
 	};
 
 	const sendDoodle = async (dataUri: string) => {

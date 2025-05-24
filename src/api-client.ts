@@ -1,3 +1,5 @@
+import type { GameState } from "./be-types";
+
 interface StartGameInput {
 	playerId: string;
 }
@@ -10,16 +12,6 @@ interface StartGameOuptut {
 interface GetGameStateInput {
 	gameId: string;
 }
-interface GetGameStateOutput {
-	state: string;
-	maxPlayers: number;
-	playerId: string;
-	players: string[];
-	monsterImageMap: Record<string, string>;
-	monsterConfigMap: Record<string, string>;
-	audioFilePath: string;
-}
-
 interface AddPlayerInput {
 	gameId: string;
 	requestedPlayerId: string;
@@ -75,7 +67,7 @@ export default class ApiV1Client {
 
 	public async getGameState({
 		gameId,
-	}: GetGameStateInput): Promise<GetGameStateOutput> {
+	}: GetGameStateInput): Promise<GameState> {
 		const response = await fetch(`${this.baseUrl}/game/${gameId}`, {
 			method: "GET",
 			headers: {
@@ -161,7 +153,7 @@ export default class ApiV1Client {
 				body: JSON.stringify({
 					name,
 					description,
-					type: monsterType,
+					monsterType,
 					attackTypes,
 					specialAbilities,
 					power,
