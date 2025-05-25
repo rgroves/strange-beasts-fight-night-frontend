@@ -6,16 +6,12 @@ import type { GameState } from "./be-types";
 
 const client = new ApiV1Client();
 
-const p1MonsterDesc =
-	"A giant ball of demonic flesh with a single eye in the middle. An appendage rises from the top of the ball, and it has a another smaller eye, that can shoot radiant heat beams from it. A slim mouth, dripping with some kind of goo, displays sharp bone-razor like teeth.";
-const p2MonsterDesc =
-	"A giant mud golem, made of dirt and carnage. Can hurl a volley of deadly mud balls.";
-
 function App() {
 	const [gameId, setGameId] = useState<string>("");
 	const [localGameState, setLocalGameState] = useState<GameState | null>(
 		null,
 	);
+	const [playerId, setPlayerId] = useState<string>("");
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
@@ -55,6 +51,7 @@ function App() {
 			playerId: requestedPlayerId,
 		});
 		setGameId(gameId);
+		setPlayerId(playerId);
 		console.log(
 			`Game started with gameId(${gameId}) and playerId(${playerId})`,
 		);
@@ -76,11 +73,12 @@ function App() {
 			...prevState,
 			state: "WAIT",
 		}));
+		setPlayerId(playerId);
 		console.log(`Joined game as player: ${playerId}`);
 		console.log(`Current players: ${localGameState?.players}`);
 	};
 
-	const sendDoodle = async (dataUri: string) => {
+	const sendDoodle = async (dataUri: string, monsterDescription: string) => {
 		if (localGameState?.state !== "DrawingPhase") {
 			return;
 		}
@@ -89,14 +87,6 @@ function App() {
 			console.error("No game ID available to send doodle.");
 			return;
 		}
-
-		const playerId =
-			localGameState?.monsterImageMap["Player 1"] === undefined ?
-				"Player 1"
-			:	"Player 2";
-
-		const monsterDescription =
-			playerId === "Player 1" ? p1MonsterDesc : p2MonsterDesc;
 
 		const doodleFileName = await client.uploadDoodle({
 			gameId,
@@ -139,26 +129,14 @@ function App() {
 						onSubmit={async (e) => {
 							e.preventDefault();
 
-							const playerId =
-								(
-									localGameState?.monsterConfigMap[
-										"Player 1"
-									] === undefined
-								) ?
-									"Player 1"
-								:	"Player 2";
-
-							const monsterDescription =
-								playerId === "Player 1" ? p1MonsterDesc : (
-									p2MonsterDesc
-								);
-
 							const formData = new FormData(e.currentTarget);
 							const monsterConfig = {
 								name:
 									formData.get("name")?.toString().trim() ??
 									"",
-								description: monsterDescription,
+								description:
+									localGameState?.players[playerId]
+										.monsterDescription,
 								monsterType:
 									formData.get("type")?.toString().trim() ??
 									"",

@@ -6,11 +6,12 @@ import {
 } from "react-sketch-canvas";
 
 interface DoodleCanvasProps {
-	onExport: (dataUri: string) => Promise<void>;
+	onExport: (dataUri: string, monsterDescription: string) => Promise<void>;
 }
 
 export default function DoodleCanvas({ onExport }: DoodleCanvasProps) {
 	const canvasRef = useRef<ReactSketchCanvasRef>(null);
+	const [description, setDescription] = useState("");
 
 	const [eraseMode, setEraseMode] = useState(false);
 	const [strokeColor, setStrokeColor] = useState("#000000");
@@ -148,18 +149,35 @@ export default function DoodleCanvas({ onExport }: DoodleCanvasProps) {
 				width="1024px"
 				height="1024px"
 			/>
+
+			<div>
+				<label htmlFor="description">Monster Description:</label>
+				<textarea
+					style={{ width: "75%" }}
+					id="description"
+					value={description}
+					onChange={(e) => setDescription(e.target.value)}
+					rows={5}
+					className="form-control"
+				/>
+			</div>
+
 			<button
 				type="button"
 				onClick={() => {
 					if (!canvasRef.current) {
 						return;
 					}
+					if (description.trim() === "") {
+						alert("Please enter a description.");
+						return;
+					}
 
 					(canvasRef.current as CanvasRef)
 						.exportImage("png", { width: 1024, height: 1024 })
-						.then((data) => {
-							console.log(data);
-							onExport(data);
+						.then((dataUri) => {
+							console.log(dataUri);
+							onExport(dataUri, description);
 						})
 						.catch((e) => {
 							console.log(e);
