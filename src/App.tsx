@@ -230,7 +230,7 @@ function App() {
 									type="number"
 									placeholder="Power"
 									min={1}
-									max={10}
+									max={6}
 									defaultValue={3}
 									required
 								/>
@@ -244,7 +244,7 @@ function App() {
 									type="number"
 									placeholder="Defense"
 									min={1}
-									max={10}
+									max={6}
 									defaultValue={3}
 									required
 								/>
@@ -258,7 +258,7 @@ function App() {
 									type="number"
 									placeholder="Speed"
 									min={1}
-									max={10}
+									max={6}
 									defaultValue={3}
 									required
 								/>
