@@ -4,7 +4,7 @@ interface StartGameInput {
 	playerId: string;
 }
 
-interface StartGameOuptut {
+interface StartGameOutput {
 	gameId: string;
 	playerId: string;
 }
@@ -49,7 +49,7 @@ interface UploadMonsterConfigInput {
 export default class ApiV1Client {
 	private baseUrl = "http://localhost:3000/api/v1";
 
-	public async startGame(input: StartGameInput): Promise<StartGameOuptut> {
+	public async startGame(input: StartGameInput): Promise<StartGameOutput> {
 		const response = await fetch(`${this.baseUrl}/game`, {
 			method: "POST",
 			headers: {
