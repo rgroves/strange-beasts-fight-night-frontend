@@ -21,7 +21,7 @@ export interface GameState {
 		| "AudioGenerationPhase"
 		| "GameOver";
 	maxPlayers: number;
-	players: Record<PlayerId, Player>;
+	playersMap: Record<PlayerId, Player>;
 	monsterImageMap: Record<PlayerId, string>;
 	monsterConfigMap: Record<PlayerId, MonsterConfig>;
 	battleAudioFileName: string;
