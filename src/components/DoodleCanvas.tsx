@@ -4,6 +4,7 @@ import {
 	type CanvasRef,
 	type ReactSketchCanvasRef,
 } from "react-sketch-canvas";
+import useDynamicSizing from "../hooks/useDynamicSizing";
 
 interface DoodleCanvasProps {
 	onExport: (dataUri: string, monsterDescription: string) => Promise<void>;
@@ -11,6 +12,7 @@ interface DoodleCanvasProps {
 
 export default function DoodleCanvas({ onExport }: DoodleCanvasProps) {
 	const canvasRef = useRef<ReactSketchCanvasRef>(null);
+	const { doodleSize } = useDynamicSizing();
 	const [description, setDescription] = useState("");
 
 	const [eraseMode, setEraseMode] = useState(false);
@@ -57,135 +59,170 @@ export default function DoodleCanvas({ onExport }: DoodleCanvasProps) {
 		setStrokeColor(event.target.value);
 	};
 
+	const saveHandler = async () => {
+		if (!canvasRef.current) {
+			return;
+		}
+		if (description.trim() === "") {
+			alert("Please enter a description.");
+			return;
+		}
+
+		(canvasRef.current as CanvasRef)
+			.exportImage("png", { width: 1024, height: 1024 })
+			.then((dataUri) => {
+				console.log(dataUri);
+				onExport(dataUri, description);
+			})
+			.catch((e) => {
+				console.log(e);
+			});
+	};
+
 	return (
-		<div>
-			<h1>Tools</h1>
-			<div className="d-flex gap-2 align-items-center ">
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					disabled={!eraseMode}
-					onClick={handlePenClick}
-				>
-					Pen
-				</button>
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					disabled={eraseMode}
-					onClick={handleEraserClick}
-				>
-					Eraser
-				</button>
-				<label htmlFor="strokeWidth" className="form-label">
-					Stroke width
-				</label>
-				<input
-					disabled={eraseMode}
-					type="range"
-					className="form-range"
-					min="1"
-					max="20"
-					step="1"
-					id="strokeWidth"
-					value={strokeWidth}
-					onChange={handleStrokeWidthChange}
-				/>
-				<label htmlFor="color">Stroke color</label>
-				<input
-					type="color"
-					value={strokeColor}
-					onChange={handleStrokeColorChange}
-				/>
-				<label htmlFor="eraserWidth" className="form-label">
-					Eraser width
-				</label>
-				<input
-					disabled={!eraseMode}
-					type="range"
-					className="form-range"
-					min="1"
-					max="20"
-					step="1"
-					id="eraserWidth"
-					value={eraserWidth}
-					onChange={handleEraserWidthChange}
-				/>
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					onClick={handleUndoClick}
-				>
-					Undo
-				</button>
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					onClick={handleRedoClick}
-				>
-					Redo
-				</button>
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					onClick={handleClearClick}
-				>
-					Clear
-				</button>
-				<button
-					type="button"
-					className="btn btn-sm btn-outline-primary"
-					onClick={handleResetClick}
-				>
-					Reset
-				</button>
-			</div>
-			<h1>Canvas</h1>
-			<ReactSketchCanvas
-				ref={canvasRef}
-				strokeColor={strokeColor}
-				strokeWidth={strokeWidth}
-				eraserWidth={eraserWidth}
-				width="1024px"
-				height="1024px"
-			/>
-
-			<div>
-				<label htmlFor="description">Monster Description:</label>
-				<textarea
-					style={{ width: "75%" }}
-					id="description"
-					value={description}
-					onChange={(e) => setDescription(e.target.value)}
-					rows={5}
-					className="form-control"
-				/>
-			</div>
-
-			<button
-				type="button"
-				onClick={() => {
-					if (!canvasRef.current) {
-						return;
-					}
-					if (description.trim() === "") {
-						alert("Please enter a description.");
-						return;
-					}
-
-					(canvasRef.current as CanvasRef)
-						.exportImage("png", { width: 1024, height: 1024 })
-						.then((dataUri) => {
-							console.log(dataUri);
-							onExport(dataUri, description);
-						})
-						.catch((e) => {
-							console.log(e);
-						});
+		<div className="card">
+			<h2>Draw Your Beast</h2>
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "1rem",
 				}}
 			>
-				Get Image
-			</button>
+				<p
+					style={{
+						maxWidth: "70ch",
+						alignSelf: "center",
+						textWrap: "balance",
+					}}
+				>
+					Just needs to be a simple doodle, it doesn't have to be
+					fancy. Do be sure to provide a creative, imaginative
+					description of your beast in the text area below the
+					drawing.
+				</p>
+				<div
+					style={{
+						margin: "0 auto",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: ".5rem",
+						}}
+					>
+						<div
+							style={{
+								display: "flex",
+								gap: "1rem",
+								alignItems: "center",
+							}}
+						>
+							<button
+								type="button"
+								disabled={!eraseMode}
+								onClick={handlePenClick}
+							>
+								Pen
+							</button>
+							<label htmlFor="strokeWidth">Stroke width</label>
+							<input
+								disabled={eraseMode}
+								type="range"
+								min="1"
+								max="20"
+								step="1"
+								id="strokeWidth"
+								value={strokeWidth}
+								onChange={handleStrokeWidthChange}
+							/>
+							<label htmlFor="color">Stroke color</label>
+							<input
+								id="color"
+								type="color"
+								value={strokeColor}
+								onChange={handleStrokeColorChange}
+							/>
+						</div>
+
+						<div
+							style={{
+								display: "flex",
+								gap: "1rem",
+								alignItems: "center",
+							}}
+						>
+							<button
+								type="button"
+								disabled={eraseMode}
+								onClick={handleEraserClick}
+							>
+								Eraser
+							</button>
+							<label htmlFor="eraserWidth">Eraser width</label>
+							<input
+								disabled={!eraseMode}
+								type="range"
+								min="1"
+								max="20"
+								step="1"
+								id="eraserWidth"
+								value={eraserWidth}
+								onChange={handleEraserWidthChange}
+							/>
+						</div>
+
+						<div
+							style={{
+								display: "flex",
+								gap: "1rem",
+								alignItems: "center",
+								justifyContent: "space-around",
+							}}
+						>
+							<button type="button" onClick={handleUndoClick}>
+								Undo
+							</button>
+							<button type="button" onClick={handleRedoClick}>
+								Redo
+							</button>
+							<button type="button" onClick={handleClearClick}>
+								Clear
+							</button>
+							<button type="button" onClick={handleResetClick}>
+								Reset
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<ReactSketchCanvas
+					style={{ alignSelf: "center" }}
+					ref={canvasRef}
+					strokeColor={strokeColor}
+					strokeWidth={strokeWidth}
+					eraserWidth={eraserWidth}
+					width={`${doodleSize}px`}
+					height={`${doodleSize}px`}
+				/>
+
+				<div>
+					<label htmlFor="description">Monster Description:</label>
+					<textarea
+						style={{ width: "100%" }}
+						id="description"
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+						rows={5}
+					/>
+				</div>
+
+				<button type="button" onClick={saveHandler}>
+					Save
+				</button>
+			</div>
 		</div>
 	);
 }
