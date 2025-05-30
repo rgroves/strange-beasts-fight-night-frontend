@@ -1,5 +1,7 @@
 # Strange Beasts: Fight Night
 
+This project was built when I was participating in the [Web Dev Challenge Hackathon S2.E2: Build a game played on at least 2 devices](https://codetv.dev/blog/web-dev-challenge-hackathon-s2e2-multi-device-game-temporal).
+
 ## Overview
 
 Unleash your inner doodler in this wild, web-based arena where—with the help of your imagination, AI, and our virtual ring-side blow-by-blow commentator—**your doodles come to life**!
