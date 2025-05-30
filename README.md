@@ -32,3 +32,19 @@ Ready to turn your sketches into legendary fighters? Let the Strange Beasts: Fig
 ## **Ready? Fight!**
 
 Play here: _\[TODO: URL TBD]_
+
+## Running Locally
+
+### Backend Prerequisites
+
+You'll need the backend components (Temporal Server, Temporal Worker, and BEFE Server) which can be found in this repo:
+https://github.com/rgroves/strange-beasts-fight-night-backend
+
+### Starting the App Locally
+
+1. Ensure all backend components are running (see Backend Prerequisites)
+1. You'll need to create a `.env` file at the root of your local repo with the appropriate vars set. See the `.env-example.txt` for details.
+1. Start the app:
+    ```
+    npm run start
+    ```
