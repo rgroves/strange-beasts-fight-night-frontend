@@ -8,7 +8,7 @@ import DoodleCanvas from "./DoodleCanvas";
 import EndGamePanel from "./EndGamePanel";
 import MonsterConfigPanel from "./MonsterConfigPanel";
 
-const REFRESH_INTERVAL = 5000;
+const REFRESH_INTERVAL = 1000;
 const client = new ApiV1Client();
 
 export default function Game() {
@@ -17,6 +17,7 @@ export default function Game() {
 	const [localGameState, setLocalGameState] = useState<GameState | null>(
 		null,
 	);
+	const [waitForState, setWaitForState] = useState("");
 
 	const statePollingIntervalId = useRef<NodeJS.Timeout | null>(null);
 
@@ -53,6 +54,12 @@ export default function Game() {
 		};
 	}, [gameId]);
 
+	useEffect(() => {
+		if (localGameState?.state === waitForState) {
+			setWaitForState("");
+		}
+	}, [localGameState?.state, waitForState]);
+
 	if (!gameId && routeGameId) {
 		console.log("Setting gameId from route:", routeGameId);
 		setGameId(routeGameId);
@@ -63,6 +70,20 @@ export default function Game() {
 	}
 
 	const hasGameAndPlayerId = gameId && playerId;
+	const isAbleToJoinGame =
+		!playerId && localGameState?.state === "LobbyPhase";
+	const isWaitingForPlayers =
+		playerId && localGameState?.state === "LobbyPhase";
+	const shouldAllowDrawing =
+		localGameState?.state === "DrawingPhase" &&
+		!waitForState &&
+		hasGameAndPlayerId;
+	const shouldAllowMonsterConfig =
+		localGameState?.state === "MonsterConfigPhase" &&
+		!waitForState &&
+		hasGameAndPlayerId;
+	const isGameOver = localGameState?.state === "GameOver" && gameId;
+	const isLoading = !waitForState && !isGameOver;
 
 	if (localGameState?.state === "GameOver") {
 		stopStatePolling();
@@ -84,26 +105,13 @@ export default function Game() {
 	};
 
 	const sendDoodle = async (dataUri: string, monsterDescription: string) => {
-		if (localGameState?.state !== "DrawingPhase") {
-			return;
-		}
-
-		if (!gameId) {
-			console.error("No game ID available to send doodle.");
-			return;
-		}
-
-		if (!playerId) {
-			console.error("No player ID available to send doodle.");
-			return;
-		}
-
 		const doodleFileName = await client.uploadDoodle({
 			gameId,
 			playerId,
 			monsterDescription,
 			dataUri,
 		});
+		setWaitForState("MonsterConfigPhase");
 
 		console.log(`Doodle sent: ${doodleFileName}`);
 	};
@@ -152,36 +160,41 @@ export default function Game() {
 			...monsterConfig,
 		});
 		console.log("Monster Config submitted");
+		setWaitForState("Audio");
 	};
 
 	return (
 		<div>
 			<div className="card">
-				<h1>Game</h1>
-				<h2>{gameId}</h2>
-				<h3>{`Current Game State: ${localGameState?.state}`}</h3>
-				{!playerId && localGameState?.state === "LobbyPhase" && (
+				<h1>Strange Beasts: Fight Night</h1>
+				<h2>
+					Room Code:{" "}
+					<a href={`http://localhost:5173/game/${gameId}`}>
+						{gameId}
+					</a>
+				</h2>
+				<h3>{`Game State: ${localGameState?.state}`}</h3>
+				{isAbleToJoinGame && (
 					<button onClick={joinGame} type="button">
 						Join Game
 					</button>
 				)}
-				{playerId && <p>You are: {playerId}</p>}
-				{playerId && localGameState?.state === "LobbyPhase" && (
-					<p>Waiting for other players.</p>
-				)}
+				{isWaitingForPlayers && <p>You are: {playerId}</p>}
+				{isWaitingForPlayers && <p>Waiting for other players.</p>}
 			</div>
 
-			{localGameState?.state === "DrawingPhase" && hasGameAndPlayerId && (
-				<DoodleCanvas onExport={sendDoodle} />
+			{shouldAllowDrawing && <DoodleCanvas onExport={sendDoodle} />}
+
+			{shouldAllowMonsterConfig && (
+				<MonsterConfigPanel onSubmit={submitMonsterConfig} />
 			)}
 
-			{localGameState?.state === "MonsterConfigPhase" &&
-				hasGameAndPlayerId && (
-					<MonsterConfigPanel onSubmit={submitMonsterConfig} />
-				)}
+			{isGameOver && <EndGamePanel gameState={localGameState} />}
 
-			{localGameState?.state === "GameOver" && hasGameAndPlayerId && (
-				<EndGamePanel gameState={localGameState} />
+			{isLoading && (
+				<div className="card">
+					<p>Loading...</p>
+				</div>
 			)}
 		</div>
 	);
