@@ -83,7 +83,7 @@ export default function Game() {
 		!waitForState &&
 		hasGameAndPlayerId;
 	const isGameOver = localGameState?.state === "GameOver" && gameId;
-	const isLoading = !waitForState && !isGameOver;
+	const isLoading = waitForState && !isGameOver;
 
 	if (localGameState?.state === "GameOver") {
 		stopStatePolling();
