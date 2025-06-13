@@ -168,10 +168,7 @@ export default function Game() {
 			<div className="card">
 				<h1>Strange Beasts: Fight Night</h1>
 				<h2>
-					Room Code:{" "}
-					<a href={`http://localhost:5173/game/${gameId}`}>
-						{gameId}
-					</a>
+					Room Code: <a href={`/game/${gameId}`}>{gameId}</a>
 				</h2>
 				<h3>{`Game State: ${localGameState?.state}`}</h3>
 				{isAbleToJoinGame && (
